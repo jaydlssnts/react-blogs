@@ -10,7 +10,7 @@ import DeleteButton from "@/app/(nav)/blogs/delete/deleteButton";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

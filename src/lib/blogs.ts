@@ -85,7 +85,7 @@ export async function updateBlog(id: string, formData: FormData) {
       content,
       imageUrl,
     })
-    .where(and(eq(blog.id, id), eq(blog.authorId, session.session.userId)));
+    .where(eq(blog.authorId, session.session.userId));
   revalidatePath("/blogs");
 }
 
