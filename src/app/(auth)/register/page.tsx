@@ -103,46 +103,6 @@ export default function SignUp() {
               onChange={(e) => setPasswordConfirmation(e.target.value)}
             />
           </div>
-          {/* Profile Image */}
-          <div className="grid gap-2">
-            <label htmlFor="image">Profile Image (optional)</label>
-
-            <div className="flex flex-wrap items-center gap-4">
-              {imagePreview && (
-                <div className="relative h-16 w-16 overflow-hidden rounded-md">
-                  <Image
-                    src={imagePreview}
-                    alt="Profile preview"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-
-              <div className="flex w-full items-center gap-2 overflow-hidden">
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  className="w-full text-sm"
-                  onChange={handleImageChange}
-                />
-
-                {imagePreview && (
-                  <Icon
-                    icon="gg:close"
-                    width="20"
-                    height="20"
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setImage(null);
-                      setImagePreview(null);
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
           <button
             className="w-full min-h-11 rounded-lg bg-black py-2 text-lg
                        text-white transition hover:bg-gray-900 disabled:opacity-50"

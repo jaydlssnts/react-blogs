@@ -32,7 +32,7 @@ export default function Login() {
         },
         onSuccess: () => {
           toast.success("Login Success");
-          router.push("/dashboard");
+          router.push("/home");
         },
       },
     );
