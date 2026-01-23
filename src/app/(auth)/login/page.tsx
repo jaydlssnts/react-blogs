@@ -52,7 +52,7 @@ export default function Login() {
             Email
           </label>
           <input
-            className="border border-gray-300 rounded-lg p-2 px-3 focus:outline-none focus:ring-2 focus:ring-black"
+            className="border text-black border-gray-300 rounded-lg p-2 px-3 focus:outline-none focus:ring-2 focus:ring-black"
             type="email"
             name="email"
             id="email"
@@ -64,12 +64,12 @@ export default function Login() {
             Password
           </label>
           <input
-            className="border border-gray-300 rounded-lg p-2 px-3 focus:outline-none focus:ring-2 focus:ring-black"
+            className="border text-black border-gray-300 rounded-lg p-2 px-3 focus:outline-none focus:ring-2 focus:ring-black"
             type="password"
             name="password"
             id="password"
           />
-          <span className="p-1 text-sm text-center">
+          <span className="p-1 text-sm text-center text-black">
             Don’t have an account?
             <Link href={"/register"} className="px-2 text-blue-400">
               Create here
