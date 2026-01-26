@@ -18,7 +18,6 @@ export default function EditForm({ post }: { post: any }) {
     setLoading(true);
 
     try {
-      // We pass the ID and the new data
       const data = new FormData();
       data.append("title", formData.title);
       data.append("content", formData.content);

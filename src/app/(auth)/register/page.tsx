@@ -118,14 +118,14 @@ export default function SignUp() {
                 password,
                 name: `${firstName} ${lastName}`,
                 image: image ? await convertImageToBase64(image) : "",
-                callbackURL: "/dashboard",
+                callbackURL: "/home",
                 fetchOptions: {
                   onRequest: () => setLoading(true),
                   onResponse: () => setLoading(false),
                   onError: (ctx) => {
                     toast.error(ctx.error.message);
                   },
-                  onSuccess: () => router.push("/dashboard"),
+                  onSuccess: () => router.push("/home"),
                 },
               });
             }}
