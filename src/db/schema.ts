@@ -96,38 +96,23 @@ export const blog = pgTable("blog", {
 
 export const comment = pgTable("comments", {
   id: serial("id").primaryKey(),
-  blogId: integer()
+  blogId: integer("blog_id")
     .notNull()
     .references(() => blog.id, { onDelete: "cascade" }),
-  user: text("author_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  imageUrl: text("image_url"),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-
-export const blog_like = pgTable(
-  "blog_like",
-  {
-    id: serial("id").primaryKey(),
-    blogId: integer("blog_id")
-      .notNull()
-      .references(() => blog.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => [
-    index("blog_likes_blog_user_unique_idx").on(table.blogId, table.userId),
-  ],
-);
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
   blogs: many(blog),
   comments: many(comment),
-  likes: many(blog_like),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -141,15 +126,9 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const blogRelations = relations(blog, ({ one, many }) => ({
   author: one(user, { fields: [blog.authorId], references: [user.id] }),
   comments: many(comment),
-  likes: many(blog_like),
 }));
 
 export const commentRelations = relations(comment, ({ one }) => ({
   blog: one(blog, { fields: [comment.blogId], references: [blog.id] }),
-  author: one(user, { fields: [comment.user], references: [user.id] }),
-}));
-
-export const blogLikeRelations = relations(blog_like, ({ one }) => ({
-  blog: one(blog, { fields: [blog_like.blogId], references: [blog.id] }),
-  user: one(user, { fields: [blog_like.userId], references: [user.id] }),
+  author: one(user, { fields: [comment.userId], references: [user.id] }),
 }));

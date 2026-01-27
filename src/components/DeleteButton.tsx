@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function DeleteButton({ blogId }: { blogId: string }) {
+export default function DeleteButton({ blogId }: { blogId: number }) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
 
@@ -28,7 +28,6 @@ export default function DeleteButton({ blogId }: { blogId: string }) {
   async function executeDelete() {
     setIsPending(true);
 
-    // Using toast.promise gives you automatic loading, success, and error states
     toast.promise(deleteBlog(blogId), {
       loading: "Deleting post...",
       success: () => {

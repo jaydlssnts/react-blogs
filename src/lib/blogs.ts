@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/db";
-import { blog } from "@/db/schema";
+import { blog, comment, user } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, desc, and, gt, gte, lt, lte } from "drizzle-orm";
@@ -62,10 +62,21 @@ export async function getBlogsByUser() {
 }
 
 export async function getBlogBySlug(slug: string) {
-  const [item] = await db.select().from(blog).where(eq(blog.slug, slug));
+  const [result] = await db
+    .select({
+      post: blog,
+      authorName: user.name,
+    })
+    .from(blog)
+    .innerJoin(user, eq(blog.authorId, user.id))
+    .where(eq(blog.slug, slug));
 
-  if (!item) return null;
-  return item;
+  if (!result) return null;
+
+  return {
+    ...result.post,
+    authorName: result.authorName,
+  };
 }
 
 export async function updateBlog(id: string, formData: FormData) {
@@ -89,7 +100,7 @@ export async function updateBlog(id: string, formData: FormData) {
   revalidatePath("/blogs");
 }
 
-export async function deleteBlog(id: string) {
+export async function deleteBlog(id: number) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
@@ -107,4 +118,42 @@ export async function getAllBlogs() {
     console.error("Error fetching feed:", error);
     return [];
   }
+}
+
+export async function createComment(formData: FormData, blogId: number) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const content = formData.get("content")?.toString();
+  const imageUrl = formData.get("imageUrl")?.toString();
+
+  if (!content && !imageUrl) {
+    return { error: "Comment cannot be empty" };
+  }
+
+  await db.insert(comment).values({
+    blogId: blogId,
+    userId: session.user.id,
+    content: content || "",
+    imageUrl: imageUrl || null,
+  });
+
+  revalidatePath(`/blogs/${blogId}`);
+  return { success: true };
+}
+
+export async function getCommentsByBlogId(blogId: number) {
+  return await db
+    .select({
+      id: comment.id,
+      content: comment.content,
+      imageUrl: comment.imageUrl,
+      createdAt: comment.createdAt,
+      authorName: user.name,
+      authorImage: user.image,
+    })
+    .from(comment)
+    .leftJoin(user, eq(comment.userId, user.id))
+    .where(eq(comment.blogId, blogId))
+    .orderBy(desc(comment.createdAt));
 }

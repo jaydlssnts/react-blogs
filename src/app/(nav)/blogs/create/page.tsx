@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@supabase/supabase-js";
+import Link from "next/link";
 
-// Initialize Supabase (Ensure these are in your .env)
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
@@ -26,19 +26,17 @@ export default function CreateBlogPage() {
     try {
       let publicUrl = null;
 
-      // 1. If a file is selected, upload it to Supabase
       if (file && file.size > 0) {
         const fileExt = file.name.split(".").pop();
         const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
         const filePath = `${fileName}`;
 
         const { error: uploadError } = await supabase.storage
-          .from("blog-images") // Name of your Supabase bucket
+          .from("blog-images")
           .upload(filePath, file);
 
         if (uploadError) throw uploadError;
 
-        // 2. Get the URL
         const { data } = supabase.storage
           .from("blog-images")
           .getPublicUrl(filePath);
@@ -46,16 +44,15 @@ export default function CreateBlogPage() {
         publicUrl = data.publicUrl;
       }
 
-      // 3. Set the 'image' field in FormData to the URL string
       if (publicUrl) {
         formData.set("image", publicUrl);
       }
-
-      // 4. Send to Server Action
+      toast.loading("Creating Blog");
       await createBlog(formData);
+      toast.dismiss();
 
-      toast.success("Blog created successfully");
       router.push("/blogs");
+      toast.success("Blog created successfully");
     } catch (err: any) {
       toast.error(err.message ?? "Something went wrong");
     } finally {
@@ -64,7 +61,7 @@ export default function CreateBlogPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow">
+    <div className="max-w-2xl mx-auto p-6 bg-white text-black rounded-xl shadow">
       <h2 className="text-2xl font-semibold mb-6">Create Blog</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -92,7 +89,7 @@ export default function CreateBlogPage() {
           <label className="block font-medium mb-1">Feature Image</label>
           <input
             type="file"
-            name="fileToUpload" // Name used for getting the File object
+            name="fileToUpload"
             accept="image/*"
             className="w-full border rounded px-3 py-2"
           />
@@ -101,10 +98,16 @@ export default function CreateBlogPage() {
         <button
           type="submit"
           disabled={isPending}
-          className="mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="mt-4 bg-blue-600 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {isPending ? "Saving..." : "Save Blog"}
+          {isPending ? "Saving..." : "Create Blog"}
         </button>
+        <Link
+          href={"/blogs"}
+          className="mt-4 bg-red-600 py-2 rounded hover:bg-red-700 disabled:opacity-50 text-center "
+        >
+          Cancel
+        </Link>
       </form>
     </div>
   );

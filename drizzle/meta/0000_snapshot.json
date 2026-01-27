@@ -1,5 +1,5 @@
 {
-  "id": "624c2f34-d4c1-4937-8c60-3bc8eb0c8c66",
+  "id": "371bbd13-16ad-415e-83ab-13a428340eec",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -218,8 +218,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.blog_like": {
-      "name": "blog_like",
+    "public.comments": {
+      "name": "comments",
       "schema": "",
       "columns": {
         "id": {
@@ -240,92 +240,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "blog_likes_blog_user_unique_idx": {
-          "name": "blog_likes_blog_user_unique_idx",
-          "columns": [
-            {
-              "expression": "blog_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "blog_like_blog_id_blog_id_fk": {
-          "name": "blog_like_blog_id_blog_id_fk",
-          "tableFrom": "blog_like",
-          "tableTo": "blog",
-          "columnsFrom": [
-            "blog_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "blog_like_user_id_user_id_fk": {
-          "name": "blog_like_user_id_user_id_fk",
-          "tableFrom": "blog_like",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.comments": {
-      "name": "comments",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "blogId": {
-          "name": "blogId",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "author_id": {
-          "name": "author_id",
+        "image_url": {
+          "name": "image_url",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "content": {
           "name": "content",
@@ -350,12 +269,25 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "comments_blogId_blog_id_fk": {
-          "name": "comments_blogId_blog_id_fk",
+        "comments_blog_id_blog_id_fk": {
+          "name": "comments_blog_id_blog_id_fk",
           "tableFrom": "comments",
           "tableTo": "blog",
           "columnsFrom": [
-            "blogId"
+            "blog_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "comments_user_id_user_id_fk": {
+          "name": "comments_user_id_user_id_fk",
+          "tableFrom": "comments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
           ],
           "columnsTo": [
             "id"
