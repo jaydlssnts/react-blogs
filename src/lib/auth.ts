@@ -13,14 +13,12 @@ const client = postgres(process.env.DATABASE_URL);
 const db = drizzle({ client });
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg", // or "mysql", "sqlite"
+    provider: "pg",
     schema,
   }),
   emailAndPassword: {
     enabled: true,
-    async sendResetPassword(data, request) {
-      // Send an email to the user with a link to reset their password
-    },
+    async sendResetPassword(data, request) {},
   },
   socialProviders: {
     google: {

@@ -11,7 +11,6 @@ export default function DeleteButton({ blogId }: { blogId: number }) {
   const [isPending, setIsPending] = useState(false);
 
   const startDeleteProcess = () => {
-    // Trigger the confirmation toast
     toast("Delete this post?", {
       description: "This action is permanent and cannot be undone.",
       action: {

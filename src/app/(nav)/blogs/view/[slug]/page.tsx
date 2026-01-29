@@ -74,7 +74,11 @@ export default async function View({
             />
           </div>
         )}
-        <Comments blogId={post.id} initialComments={comments} />
+        <Comments
+          blogId={post.id}
+          initialComments={comments}
+          currentUserId={session?.user?.id}
+        />
       </div>
     </article>
   );

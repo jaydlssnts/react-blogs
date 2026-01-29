@@ -79,7 +79,6 @@ export default function ProfilePage() {
               No blogs found. Start writing!
             </div>
           }
-          // Customizing the header style to match your previous design
           customStyles={{
             headRow: {
               style: {

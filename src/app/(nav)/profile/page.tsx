@@ -4,7 +4,7 @@ import LogoutButton from "./LogoutButton";
 import { getUserById } from "@/lib/user";
 
 export default async function ProfilePage() {
-  const user = await getUserById(); // resolve once
+  const user = await getUserById();
   const session = await auth.api.getSession({
     headers: await headers(),
   });

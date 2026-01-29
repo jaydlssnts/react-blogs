@@ -85,7 +85,7 @@ export async function updateBlog(id: string, formData: FormData) {
 
   const title = formData.get("title")?.toString();
   const content = formData.get("content")?.toString();
-  const imageUrl = formData.get("image")?.toString(); // From Supabase
+  const imageUrl = formData.get("imageUrl")?.toString();
 
   if (!title || !content) throw new Error("Fields required");
 
@@ -95,6 +95,7 @@ export async function updateBlog(id: string, formData: FormData) {
       title,
       content,
       imageUrl,
+      updatedAt: new Date(),
     })
     .where(eq(blog.authorId, session.session.userId));
   revalidatePath("/blogs");
@@ -142,6 +143,35 @@ export async function createComment(formData: FormData, blogId: number) {
   return { success: true };
 }
 
+export async function updateComment(commentId: number, formData: FormData) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const content = formData.get("content")?.toString();
+  const imageUrl = formData.get("imageUrl")?.toString();
+
+  await db
+    .update(comment)
+    .set({
+      content,
+      imageUrl,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(comment.id, commentId), eq(comment.userId, session.user.id)));
+
+  revalidatePath(`/blogs/view/${blog.slug}`);
+}
+
+export async function deleteComment(commentId: number) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  await db
+    .delete(comment)
+    .where(and(eq(comment.id, commentId), eq(comment.userId, session.user.id)));
+
+  revalidatePath("/");
+}
 export async function getCommentsByBlogId(blogId: number) {
   return await db
     .select({
@@ -149,6 +179,7 @@ export async function getCommentsByBlogId(blogId: number) {
       content: comment.content,
       imageUrl: comment.imageUrl,
       createdAt: comment.createdAt,
+      userId: comment.userId,
       authorName: user.name,
       authorImage: user.image,
     })
