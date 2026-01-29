@@ -50,7 +50,7 @@ export default async function Home() {
               </p>
 
               <div className="flex items-center text-blue-600 font-semibold text-sm">
-                Read Article
+                Read Blog
                 <Icon
                   icon="tabler:chevron-right"
                   width="16"

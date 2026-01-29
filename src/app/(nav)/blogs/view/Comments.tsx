@@ -184,7 +184,7 @@ export default function Comments({
                       <button
                         onClick={() => handleDelete(c.id)}
                         disabled={loading}
-                        className="flex items-center gap-1 px-4 py-2 bg-red-500 text-white border border-red-500 hover:bg-white hover:text-red-500 rounded-lg transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1 px-4 py-1 bg-red-500 text-white rounded-lg hover:bg-white hover:text-red-500 transition-colors cursor-pointer"
                       >
                         Delete
                       </button>
@@ -194,7 +194,7 @@ export default function Comments({
                             setEditingId(null);
                             setEditFile(null);
                           }}
-                          className="text-gray-500 text-sm font-medium px-3 py-1"
+                          className="text-red-900 border border-red-900 font-bold text-sm rounded-lg  px-3 py-1"
                         >
                           Cancel
                         </button>
