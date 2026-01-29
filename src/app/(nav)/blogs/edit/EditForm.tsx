@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { updateBlog } from "@/lib/blogs";
 import { toast } from "sonner";
 import { createClient } from "@supabase/supabase-js";
+import { Icon } from "@iconify/react";
 
 export default function EditForm({ post }: { post: any }) {
   const router = useRouter();
@@ -16,7 +17,6 @@ export default function EditForm({ post }: { post: any }) {
     content: post.content,
   });
 
-  //edit picture photo
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
@@ -30,12 +30,17 @@ export default function EditForm({ post }: { post: any }) {
     }
   };
 
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl("");
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
     try {
-      let finalImageUrl = post.imageUrl;
+      let finalImageUrl = previewUrl;
 
       if (selectedFile) {
         const fileName = `${Date.now()}-${selectedFile.name}`;
@@ -55,7 +60,7 @@ export default function EditForm({ post }: { post: any }) {
       const data = new FormData();
       data.append("title", formData.title);
       data.append("content", formData.content);
-      data.append("imageUrl", finalImageUrl);
+      data.append("imageUrl", finalImageUrl || "");
 
       await updateBlog(post.id, data);
 
@@ -93,13 +98,25 @@ export default function EditForm({ post }: { post: any }) {
           Blog Image
         </label>
         <div className="space-y-4">
-          {previewUrl && (
-            <div className="relative w-full h-48 rounded-xl overflow-hidden border">
+          {previewUrl ? (
+            <div className="relative w-full h-64 rounded-xl overflow-hidden border bg-gray-50 flex items-center justify-center">
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="w-full h-full object-cover"
+                className="max-w-full max-h-full object-contain"
               />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                title="Remove Image"
+              >
+                <Icon icon="tabler:trash" width="24" height="24" />
+              </button>
+            </div>
+          ) : (
+            <div className="w-full h-32 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center text-gray-400">
+              No image selected
             </div>
           )}
           <input

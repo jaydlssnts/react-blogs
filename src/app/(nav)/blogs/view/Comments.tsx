@@ -1,9 +1,10 @@
 "use client";
 
 import { createClient } from "@supabase/supabase-js";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createComment, updateComment, deleteComment } from "@/lib/blogs";
 import { toast } from "sonner";
+import { Icon } from "@iconify/react";
 
 type CommentType = {
   id: number;
@@ -28,6 +29,7 @@ export default function Comments({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
   const [editFile, setEditFile] = useState<File | null>(null);
+  const [editPreview, setEditPreview] = useState<string | null>(null);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -79,19 +81,21 @@ export default function Comments({
   async function handleUpdate(c: CommentType) {
     setLoading(true);
     try {
-      let finalUrl = c.imageUrl || "";
+      let finalUrl = editPreview;
+
       if (editFile) {
         finalUrl = await uploadImage(editFile);
       }
 
       const formData = new FormData();
       formData.append("content", editContent);
-      formData.append("imageUrl", finalUrl);
+      formData.append("imageUrl", finalUrl || "");
 
       await updateComment(c.id, formData);
       toast.success("Updated Successfully");
       setEditingId(null);
       setEditFile(null);
+      setEditPreview(null);
     } catch (err) {
       toast.error("Update failed");
     } finally {
@@ -152,8 +156,9 @@ export default function Comments({
                       onClick={() => {
                         setEditingId(c.id);
                         setEditContent(c.content);
+                        setEditPreview(c.imageUrl);
                       }}
-                      className="flex items-center gap-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-white hover:text-blue-500 transition-colors cursor-pointer"
+                      className="flex items-center gap-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-white border hover:text-blue-500 hover:border hover:border-blue-500 transition-colors cursor-pointer"
                     >
                       Edit
                     </button>
@@ -167,19 +172,46 @@ export default function Comments({
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
                     />
-                    <div className="flex flex-col gap-1">
+
+                    <div className="flex flex-col gap-2">
                       <p className="text-xs font-semibold text-gray-500">
-                        Update Image:
+                        Image:
                       </p>
+
+                      {editPreview && (
+                        <div className="relative w-full max-h-60 rounded-lg overflow-hidden border bg-gray-50 flex items-center justify-center">
+                          <img
+                            src={editPreview}
+                            className="max-h-60 object-contain"
+                            alt="Preview"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditPreview(null);
+                              setEditFile(null);
+                            }}
+                            className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full shadow-md hover:bg-red-700 transition-colors"
+                          >
+                            <Icon icon="tabler:trash" width="24" height="24" />
+                          </button>
+                        </div>
+                      )}
+
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) =>
-                          setEditFile(e.target.files?.[0] || null)
-                        }
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setEditFile(file);
+                            setEditPreview(URL.createObjectURL(file));
+                          }
+                        }}
                         className="text-xs"
                       />
                     </div>
+
                     <div className="flex justify-between items-center mt-2">
                       <button
                         onClick={() => handleDelete(c.id)}
@@ -193,8 +225,9 @@ export default function Comments({
                           onClick={() => {
                             setEditingId(null);
                             setEditFile(null);
+                            setEditPreview(null);
                           }}
-                          className="text-red-900 border border-red-900 font-bold text-sm rounded-lg  px-3 py-1"
+                          className="text-red-900 border border-red-900 font-bold text-sm rounded-lg px-3 py-1 hover:bg-red-50 transition-colors"
                         >
                           Cancel
                         </button>
@@ -216,7 +249,7 @@ export default function Comments({
                     {c.imageUrl && (
                       <img
                         src={c.imageUrl}
-                        className="mt-3 rounded-lg max-h-60 w-full object-contain border"
+                        className="mt-3 rounded-lg max-h-60 w-auto object-contain border"
                         alt=""
                       />
                     )}
@@ -247,7 +280,7 @@ export default function Comments({
         />
         <button
           disabled={loading}
-          className="text-center w-full md:w-1/5 p-2 bg-blue-500 text-white rounded-xl self-end hover:bg-blue-600 disabled:bg-gray-400 transition-colors"
+          className="text-center w-full md:w-1/5 p-2 bg-blue-500 text-white rounded-xl self-end hover:bg-blue-600 disabled:bg-gray-400 transition-colors cursor-pointer"
         >
           {loading ? "Posting..." : "Add Comment"}
         </button>

@@ -66,7 +66,7 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow border border-gray-100">
+      <div className="bg-white shadow border border-gray-100">
         <DataTable
           columns={columns}
           data={blogs}
